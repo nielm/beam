@@ -98,7 +98,7 @@ public class SpannerAccessor implements AutoCloseable {
       }
       // Add refcount for this spannerConfig.
       self.refcount++;
-      LOG.debug("getOrCreate(): refcount={} for {}", self.refcount, spannerConfig);
+      LOG.info("getOrCreate(): refcount={} for {}", self.refcount, spannerConfig);
       return self;
     }
   }
@@ -265,15 +265,10 @@ public class SpannerAccessor implements AutoCloseable {
 
   @Override
   public void close() {
-    // Only close Spanner when present in map and refcount == 0
+    // Never close spanner connection
     synchronized (spannerAccessors) {
       refcount--;
-      LOG.debug("close(): refcount={} for {}", refcount, spannerConfig);
-      if (refcount <= 0) {
-        spannerAccessors.remove(spannerConfig);
-        LOG.info("Closing {} ", spannerConfig);
-        spanner.close();
-      }
+      LOG.info("close(): refcount={} for {}", refcount, spannerConfig);
     }
   }
 }
